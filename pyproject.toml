@@ -1,0 +1,49 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "setuptools-scm>=8.0"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytest-aws-apigateway"
+dynamic = ["version"]
+description = 'pytest plugin for AWS ApiGateway'
+readme = "README.md"
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+keywords = []
+authors = [
+  { name = "Felix Scherz", email = "felixwscherz@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Framework :: Pytest"
+]
+dependencies = ["pytest", "pytest-httpx", "httpx"]
+
+[project.entry-points.pytest11]
+pytest-aws-apigateway = "pytest_aws_apigateway.plugin"
+
+[project.urls]
+Documentation = "https://github.com/felixscherz/pytest-aws-apigateway#readme"
+Issues = "https://github.com/felixscherz/pytest-aws-apigateway/issues"
+Source = "https://github.com/felixscherz/pytest-aws-apigateway"
+
+[tool.towncrier]
+name = "pytest-aws-apigateway"
+package = "pytest_aws_apigateway"
+directory = "changes"
+filename = "CHANGELOG.md"
+
+[tool.setuptools_scm]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
