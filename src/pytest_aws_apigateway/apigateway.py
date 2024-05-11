@@ -5,6 +5,8 @@ import re
 
 from pytest_aws_apigateway.event import request_to_event, transform_response
 
+__all__ = ["ApiGateway"]
+
 
 class ApiGateway:
     def __init__(self, httpx_mock: pytest_httpx.HTTPXMock):
