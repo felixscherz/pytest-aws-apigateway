@@ -14,3 +14,16 @@ def test_handler(apigateway: ApiGateway):
     with httpx.Client() as client:
         resp = client.get("https://some/")
         assert resp.json() == {"body": "hello"}
+
+
+def test_invalid_output_format(apigateway: ApiGateway):
+    def handler(event, context):
+        return {"statusCode": "200"}
+
+    apigateway.add_integration(
+        "/", handler=handler, method="GET", endpoint="https://some/"
+    )
+
+    with httpx.Client() as client:
+        resp = client.get("https://some/")
+        assert resp.status_code == 500

@@ -1,9 +1,14 @@
 from typing import Callable
 import httpx
+import json
 import pytest_httpx
 import re
 
-from pytest_aws_apigateway.event import request_to_event, transform_response
+from pytest_aws_apigateway.event import (
+    OutputFormatError,
+    request_to_event,
+    transform_response,
+)
 
 __all__ = ["ApiGateway"]
 
@@ -29,6 +34,12 @@ class ApiGateway:
         def integration(request: httpx.Request) -> httpx.Response:
             event = request_to_event(request, resource)
             resp = handler(event, None)
-            return transform_response(resp)
+            try:
+                return transform_response(resp)
+            except OutputFormatError:
+                return httpx.Response(
+                    status_code=500,
+                    json=json.dumps({"message": "Internal server error"}),
+                )
 
         self.httpx_mock.add_callback(callback=integration, url=newp, method=method)

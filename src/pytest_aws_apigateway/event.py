@@ -1,6 +1,9 @@
-from typing import Any, Union
+from typing import Any, TypedDict, Union
 import httpx
 import re
+
+
+class OutputFormatError(Exception): ...
 
 
 def request_to_event(request: httpx.Request, resource: str) -> dict[str, Any]:
@@ -32,7 +35,22 @@ def request_to_event(request: httpx.Request, resource: str) -> dict[str, Any]:
     return event
 
 
+class OutputFormat(TypedDict):
+    isBase64Encoded: bool
+    statusCode: int
+    headers: dict[str, str]
+    multiValueHeaders: dict[str, list[str]]
+    body: str
+
+
 def transform_response(output: Union[dict[str, Any], httpx.Response]) -> httpx.Response:
     if isinstance(output, httpx.Response):
         return output
-    raise NotImplementedError()
+    if not isinstance(output, dict):
+        raise ValueError
+    if "statusCode" not in output:
+        raise ValueError
+    status_code = output["statusCode"]
+    if not isinstance(status_code, int):
+        raise OutputFormatError
+    return httpx.Response(status_code=status_code)
