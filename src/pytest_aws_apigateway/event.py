@@ -23,7 +23,6 @@ def request_to_event(request: httpx.Request, resource: str) -> dict[str, Any]:
         "body": request.content.decode(),
         "pathParameters": path_parameters,
     }
-    ...
     return event
 
 

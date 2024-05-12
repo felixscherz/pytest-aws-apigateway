@@ -26,4 +26,3 @@ def create_context(handler: Callable) -> LambdaContext:
         function_version="$LATEST",
         function_name=f"{name}",
     )
-    ...
