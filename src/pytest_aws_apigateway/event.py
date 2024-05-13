@@ -34,9 +34,7 @@ class OutputFormat(TypedDict):
     body: str
 
 
-def transform_response(output: Union[dict[str, Any], httpx.Response]) -> httpx.Response:
-    if isinstance(output, httpx.Response):
-        return output
+def transform_response(output: dict[str, Any]) -> httpx.Response:
     if not isinstance(output, dict):
         raise ValueError
     if "statusCode" not in output:

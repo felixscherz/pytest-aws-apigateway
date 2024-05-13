@@ -1,11 +1,12 @@
 import httpx
 
+import json
 from pytest_aws_apigateway import ApiGatewayMock
 
 
 def test_root_resource(apigateway_mock: ApiGatewayMock):
     def handler(event, context):
-        return httpx.Response(200, json={"body": "hello"})
+        return {"statusCode": 200, "body": json.dumps({"body": "hello"})}
 
     apigateway_mock.add_integration(
         "/", handler=handler, method="GET", endpoint="https://some/"
@@ -18,7 +19,7 @@ def test_root_resource(apigateway_mock: ApiGatewayMock):
 
 def test_child_resource(apigateway_mock: ApiGatewayMock):
     def handler(event, context):
-        return httpx.Response(200, json={"body": "hello"})
+        return {"statusCode": 200, "body": json.dumps({"body": "hello"})}
 
     apigateway_mock.add_integration(
         "/orders", handler=handler, method="GET", endpoint="https://some/"
@@ -32,7 +33,7 @@ def test_child_resource(apigateway_mock: ApiGatewayMock):
 def test_child_resource_with_parameter(apigateway_mock: ApiGatewayMock):
     def handler(event, context):
         params = event["pathParameters"]
-        return httpx.Response(200, json={"params": params})
+        return {"statusCode": 200, "body": json.dumps({"params": params})}
 
     apigateway_mock.add_integration(
         "/orders/{id}", handler=handler, method="GET", endpoint="https://some/"
