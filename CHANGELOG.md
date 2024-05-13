@@ -1,3 +1,10 @@
+# pytest-aws-apigateway 0.3.0 (2024-05-13)
+
+### Features
+
+- Renamed fixture `apigateway` -> `apigateway_mock` and `ApiGateway` -> `ApiGatewayMock`
+
+
 # pytest-aws-apigateway 0.2.0 (2024-05-13)
 
 ### Features
