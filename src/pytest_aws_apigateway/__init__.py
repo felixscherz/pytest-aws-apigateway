@@ -1,3 +1,3 @@
-from pytest_aws_apigateway.apigateway import ApiGateway
+from pytest_aws_apigateway.apigateway import ApiGatewayMock
 
-__all__ = ["ApiGateway"]
+__all__ = ["ApiGatewayMock"]

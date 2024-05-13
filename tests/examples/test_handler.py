@@ -1,13 +1,13 @@
 import httpx
 
-from pytest_aws_apigateway import ApiGateway
+from pytest_aws_apigateway import ApiGatewayMock
 
 
-def test_handler(apigateway: ApiGateway):
+def test_handler(apigateway_mock: ApiGatewayMock):
     def handler(event, context):
         return httpx.Response(200, json={"body": "hello"})
 
-    apigateway.add_integration(
+    apigateway_mock.add_integration(
         "/", handler=handler, method="GET", endpoint="https://some/"
     )
 
@@ -16,11 +16,11 @@ def test_handler(apigateway: ApiGateway):
         assert resp.json() == {"body": "hello"}
 
 
-def test_invalid_output_format_returns_500(apigateway: ApiGateway):
+def test_invalid_output_format_returns_500(apigateway_mock: ApiGatewayMock):
     def handler(event, context):
         return {"statusCode": "200"}
 
-    apigateway.add_integration(
+    apigateway_mock.add_integration(
         "/", handler=handler, method="GET", endpoint="https://some/"
     )
 
@@ -29,11 +29,11 @@ def test_invalid_output_format_returns_500(apigateway: ApiGateway):
         assert resp.status_code == 500
 
 
-def test_output_dict_is_transformed_to_response(apigateway: ApiGateway):
+def test_output_dict_is_transformed_to_response(apigateway_mock: ApiGatewayMock):
     def handler(event, context):
         return {"statusCode": 200}
 
-    apigateway.add_integration(
+    apigateway_mock.add_integration(
         "/", handler=handler, method="GET", endpoint="https://some/"
     )
 

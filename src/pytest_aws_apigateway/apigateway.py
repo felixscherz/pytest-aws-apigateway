@@ -11,10 +11,10 @@ from pytest_aws_apigateway.event import OutputFormatError
 from pytest_aws_apigateway.event import request_to_event
 from pytest_aws_apigateway.event import transform_response
 
-__all__ = ["ApiGateway"]
+__all__ = ["ApiGatewayMock"]
 
 
-class ApiGateway:
+class ApiGatewayMock:
     def __init__(self, httpx_mock: pytest_httpx.HTTPXMock):
         self.httpx_mock = httpx_mock
         ...
