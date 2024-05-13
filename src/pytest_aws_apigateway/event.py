@@ -34,7 +34,7 @@ def request_to_event(request: httpx.Request, resource: str) -> dict[str, Any]:
     return event
 
 
-def transform_response(output: dict[str, Any]) -> httpx.Response:
+def transform_response(output: IntegrationResponse) -> httpx.Response:
     if not isinstance(output, dict):
         raise ValueError
     if "statusCode" not in output:

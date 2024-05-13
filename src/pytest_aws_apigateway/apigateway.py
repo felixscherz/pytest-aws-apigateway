@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Callable
+from typing import Any, Callable
 from typing import Union
 
 import httpx
@@ -25,7 +25,7 @@ class ApiGatewayMock:
         resource: str,
         method: str,
         endpoint: str,
-        handler: Callable[[dict, LambdaContext], IntegrationResponse],
+        handler: Callable[[dict[str, Any], LambdaContext], IntegrationResponse],
     ):
         resource = self._normalize_resource(resource)
         endpoint = self._normalize_endpoint(endpoint)
