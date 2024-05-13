@@ -31,8 +31,6 @@ class ApiGatewayMock:
         endpoint = self._normalize_endpoint(endpoint)
 
         url = self._url_expression(endpoint, resource)
-        print(resource)
-        print(url)
 
         def integration(request: httpx.Request) -> httpx.Response:
             event = request_to_event(request, resource)
