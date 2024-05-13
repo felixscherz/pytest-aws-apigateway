@@ -27,8 +27,11 @@ class ApiGatewayMock:
         handler: Callable[[dict, LambdaContext], Union[dict, httpx.Response]],
     ):
         resource = self._normalize_resource(resource)
+        endpoint = self._normalize_endpoint(endpoint)
 
         url = self._url_expression(endpoint, resource)
+        print(resource)
+        print(url)
 
         def integration(request: httpx.Request) -> httpx.Response:
             event = request_to_event(request, resource)
@@ -52,7 +55,7 @@ class ApiGatewayMock:
     def _url_expression(self, endpoint: str, resource: str) -> Union[re.Pattern, str]:
         p = re.compile(r"\{([^\/]+)\}")
         res = re.subn(p, r"([^\/]+)", resource)
-        if res[1] > 0:
-            return re.compile(f"{endpoint}/{res[0]}")
-        else:
-            return endpoint
+        return re.compile(f"{endpoint}{res[0]}")
+
+    def _normalize_endpoint(self, endpoint: str) -> str:
+        return endpoint.rstrip("/")
