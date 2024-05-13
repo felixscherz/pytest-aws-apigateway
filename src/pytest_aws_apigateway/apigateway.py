@@ -1,13 +1,14 @@
 import json
 import re
-from typing import Any, Callable
+from typing import Callable
 from typing import Union
 
 import httpx
 import pytest_httpx
 
 from pytest_aws_apigateway.context import LambdaContext, create_context
-from pytest_aws_apigateway.event import OutputFormatError
+from pytest_aws_apigateway.event import ResponseFormatError
+from pytest_aws_apigateway.event import IntegrationResponse
 from pytest_aws_apigateway.event import request_to_event
 from pytest_aws_apigateway.event import transform_response
 
@@ -24,7 +25,7 @@ class ApiGatewayMock:
         resource: str,
         method: str,
         endpoint: str,
-        handler: Callable[[dict, LambdaContext], dict[str, Any]],
+        handler: Callable[[dict, LambdaContext], IntegrationResponse],
     ):
         resource = self._normalize_resource(resource)
         endpoint = self._normalize_endpoint(endpoint)
@@ -39,7 +40,7 @@ class ApiGatewayMock:
             resp = handler(event, context)
             try:
                 return transform_response(resp)
-            except OutputFormatError:
+            except ResponseFormatError:
                 return httpx.Response(
                     status_code=500,
                     json=json.dumps({"message": "Internal server error"}),

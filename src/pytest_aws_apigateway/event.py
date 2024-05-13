@@ -5,7 +5,15 @@ import re
 PATH_PARAMETER_EXPRESSION = r"\{([^\/]+)\}"
 
 
-class OutputFormatError(Exception): ...
+class ResponseFormatError(Exception): ...
+
+
+class IntegrationResponse(TypedDict):
+    isBase64Encoded: bool
+    statusCode: int
+    headers: dict[str, str]
+    multiValueHeaders: dict[str, list[str]]
+    body: str
 
 
 def request_to_event(request: httpx.Request, resource: str) -> dict[str, Any]:
@@ -26,14 +34,6 @@ def request_to_event(request: httpx.Request, resource: str) -> dict[str, Any]:
     return event
 
 
-class OutputFormat(TypedDict):
-    isBase64Encoded: bool
-    statusCode: int
-    headers: dict[str, str]
-    multiValueHeaders: dict[str, list[str]]
-    body: str
-
-
 def transform_response(output: dict[str, Any]) -> httpx.Response:
     if not isinstance(output, dict):
         raise ValueError
@@ -41,7 +41,7 @@ def transform_response(output: dict[str, Any]) -> httpx.Response:
         raise ValueError
     status_code = output["statusCode"]
     if not isinstance(status_code, int):
-        raise OutputFormatError
+        raise ResponseFormatError
     headers = output.get("headers")
     body = output.get("body")
     return httpx.Response(status_code=status_code, headers=headers, content=body)
