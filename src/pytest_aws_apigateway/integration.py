@@ -16,7 +16,7 @@ class IntegrationResponse(TypedDict):
     body: str
 
 
-def request_to_event(request: httpx.Request, resource: str) -> dict[str, Any]:
+def build_integration_request(request: httpx.Request, resource: str) -> dict[str, Any]:
     # TODO isBase64Encoded depends on content-type header
 
     path = request.url.path
@@ -34,7 +34,7 @@ def request_to_event(request: httpx.Request, resource: str) -> dict[str, Any]:
     return event
 
 
-def transform_response(output: IntegrationResponse) -> httpx.Response:
+def transform_integration_response(output: IntegrationResponse) -> httpx.Response:
     if not isinstance(output, dict):
         raise ValueError
     if "statusCode" not in output:

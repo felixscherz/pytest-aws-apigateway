@@ -7,10 +7,10 @@ import httpx
 import pytest_httpx
 
 from pytest_aws_apigateway.context import LambdaContext, create_context
-from pytest_aws_apigateway.event import ResponseFormatError
-from pytest_aws_apigateway.event import IntegrationResponse
-from pytest_aws_apigateway.event import request_to_event
-from pytest_aws_apigateway.event import transform_response
+from pytest_aws_apigateway.integration import ResponseFormatError
+from pytest_aws_apigateway.integration import IntegrationResponse
+from pytest_aws_apigateway.integration import build_integration_request
+from pytest_aws_apigateway.integration import transform_integration_response
 
 __all__ = ["ApiGatewayMock"]
 
@@ -33,11 +33,11 @@ class ApiGatewayMock:
         url = self._url_expression(endpoint, resource)
 
         def integration(request: httpx.Request) -> httpx.Response:
-            event = request_to_event(request, resource)
+            event = build_integration_request(request, resource)
             context = create_context(handler)
             resp = handler(event, context)
             try:
-                return transform_response(resp)
+                return transform_integration_response(resp)
             except ResponseFormatError:
                 return httpx.Response(
                     status_code=500,
