@@ -19,17 +19,13 @@ pip install pytest-aws-apigateway
 ## Usage
 
 ```python
-import httpx
-
-from pytest_aws_apigateway import ApiGateway
-
-def test_handler(apigateway: ApiGateway):
-
+def test_root_resource(apigateway_mock: ApiGatewayMock):
     def handler(event, context):
-        return httpx.Response(200, json={"body": "hello"})
+        return {"statusCode": 200, "body": json.dumps({"body": "hello"})}
 
-    apigateway.add_integration("/", handler=handler, method="GET", endpoint="https://some/")
-
+    apigateway_mock.add_integration(
+        "/", handler=handler, method="GET", endpoint="https://some/"
+    )
 
     with httpx.Client() as client:
         resp = client.get("https://some/")
