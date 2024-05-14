@@ -1,14 +1,16 @@
 import json
 import re
-from typing import Any, Callable
+from typing import Any
+from typing import Callable
 from typing import Union
 
 import httpx
 import pytest_httpx
 
-from pytest_aws_apigateway.context import LambdaContext, create_context
-from pytest_aws_apigateway.integration import ResponseFormatError
+from pytest_aws_apigateway.context import LambdaContext
+from pytest_aws_apigateway.context import create_context
 from pytest_aws_apigateway.integration import IntegrationResponse
+from pytest_aws_apigateway.integration import ResponseFormatError
 from pytest_aws_apigateway.integration import build_integration_request
 from pytest_aws_apigateway.integration import transform_integration_response
 
@@ -16,6 +18,8 @@ __all__ = ["ApiGatewayMock"]
 
 
 class ApiGatewayMock:
+    """Mock acting as an AWS ApiGateway for AWS Lambda prox integrations."""
+
     def __init__(self, httpx_mock: pytest_httpx.HTTPXMock):
         self.httpx_mock = httpx_mock
         ...
@@ -27,6 +31,15 @@ class ApiGatewayMock:
         endpoint: str,
         handler: Callable[[dict[str, Any], LambdaContext], IntegrationResponse],
     ):
+        """
+        Register an AWS Lambda function handler that will be called if a request matches.
+
+        Args:
+            resource: Resource path where to mount the integration. Will be combined with endpoint to match request URLs
+            method: HTTP method for which the integration should be called
+            endpoint: API endpoint for the API gateway. Example: 'http://localhost'
+            handler: AWS Lambda handler function that will be called when a request matches
+        """
         resource = self._normalize_resource(resource)
         endpoint = self._normalize_endpoint(endpoint)
 
