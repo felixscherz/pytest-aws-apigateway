@@ -36,7 +36,7 @@ class ApiGatewayMock:
 
         Args:
             resource: Resource path where to mount the integration. Will be combined with endpoint to match request URLs
-            method: HTTP method for which the integration should be called
+            method: HTTP method for which the integration should be called. Can be 'ANY' as a catch-all.
             endpoint: API endpoint for the API gateway. Example: 'http://localhost'
             handler: AWS Lambda handler function that will be called when a request matches
         """
