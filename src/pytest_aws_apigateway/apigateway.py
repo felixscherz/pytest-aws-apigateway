@@ -57,7 +57,12 @@ class ApiGatewayMock:
                     json=json.dumps({"message": "Internal server error"}),
                 )
 
-        self.httpx_mock.add_callback(callback=integration, url=url, method=method)
+        method_to_match = method.upper()
+        if method_to_match == "ANY":
+            method_to_match = None
+        self.httpx_mock.add_callback(
+            callback=integration, url=url, method=method_to_match
+        )
 
     def _normalize_resource(self, resource: str) -> str:
         resource = resource.lstrip("/")
