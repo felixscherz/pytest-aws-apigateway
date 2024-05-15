@@ -3,18 +3,6 @@ from httpx import Client
 from pytest_aws_apigateway.integration import build_integration_request
 
 
-def test_request():
-    client = Client()
-    url = "https://some-path/my/path?a=True"
-    req = client.build_request(url=url, method="GET")
-    print(req)
-    print(req.url)
-    print(req.url.path)
-    print(req.url.params)
-    print(req.url.raw_path)
-    ...
-
-
 def test_parse_path_parameters():
     client = Client()
 
