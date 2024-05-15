@@ -1,3 +1,11 @@
+# pytest-aws-apigateway 0.5.0 (2024-05-15)
+
+### Features
+
+- `add_integration` now accepts "ANY" as a http method as a catch-all
+- `add_integration` now returns an `Integration` object with attributes for `resource`, `method` and `endpoint`
+
+
 # pytest-aws-apigateway 0.4.1 (2024-05-14)
 
 No significant changes.
