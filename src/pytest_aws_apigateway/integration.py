@@ -16,6 +16,13 @@ class IntegrationResponse(TypedDict):
     body: str
 
 
+class Integration:
+    def __init__(self, resource: str, method: str, endpoint: str) -> None:
+        self.resource = resource
+        self.method = method
+        self.endpoint = endpoint
+
+
 def build_integration_request(request: httpx.Request, resource: str) -> dict[str, Any]:
     # TODO isBase64Encoded depends on content-type header
 

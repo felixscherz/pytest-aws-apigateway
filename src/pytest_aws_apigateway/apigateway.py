@@ -9,7 +9,7 @@ import pytest_httpx
 
 from pytest_aws_apigateway.context import LambdaContext
 from pytest_aws_apigateway.context import create_context
-from pytest_aws_apigateway.integration import IntegrationResponse
+from pytest_aws_apigateway.integration import Integration, IntegrationResponse
 from pytest_aws_apigateway.integration import ResponseFormatError
 from pytest_aws_apigateway.integration import build_integration_request
 from pytest_aws_apigateway.integration import transform_integration_response
@@ -30,7 +30,7 @@ class ApiGatewayMock:
         method: str,
         endpoint: str,
         handler: Callable[[dict[str, Any], LambdaContext], IntegrationResponse],
-    ):
+    ) -> Integration:
         """
         Register an AWS Lambda function handler that will be called if a request matches.
 
@@ -63,6 +63,7 @@ class ApiGatewayMock:
         self.httpx_mock.add_callback(
             callback=integration, url=url, method=method_to_match
         )
+        return Integration(resource, method.upper(), endpoint)
 
     def _normalize_resource(self, resource: str) -> str:
         resource = resource.lstrip("/")
