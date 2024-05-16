@@ -81,3 +81,16 @@ def test_match_on_ANY_method(apigateway_mock: ApiGatewayMock):
     with httpx.Client() as client:
         resp = client.get("https://some/")
         assert resp.json() == {"body": "hello"}
+
+
+def test_headers_are_forwarded(apigateway_mock: ApiGatewayMock):
+    def handler(event, context):
+        return {"statusCode": 200, "body": json.dumps(event["headers"])}
+
+    apigateway_mock.add_integration(
+        "/", handler=handler, method="ANY", endpoint="https://some/"
+    )
+
+    with httpx.Client() as client:
+        resp = client.get("https://some/", headers={"x-test": "testing"})
+        assert resp.json()["x-test"] == "testing"

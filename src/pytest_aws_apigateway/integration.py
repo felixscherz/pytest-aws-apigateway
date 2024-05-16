@@ -33,7 +33,7 @@ def build_integration_request(request: httpx.Request, resource: str) -> dict[str
         "resource": resource,
         "path": request.url.path,
         "httpMethod": str(request.method),
-        "headers": request.headers,
+        "headers": dict(request.headers),
         "queryStringParameters": request.url.params,
         "body": request.content.decode(),
         "pathParameters": path_parameters,
