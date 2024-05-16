@@ -1,3 +1,8 @@
+# pytest-aws-apigateway 0.6.0 (2024-05-16)
+
+No significant changes.
+
+
 # pytest-aws-apigateway 0.5.1 (2024-05-16)
 
 No significant changes.
