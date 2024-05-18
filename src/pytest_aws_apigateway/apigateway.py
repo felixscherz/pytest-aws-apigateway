@@ -2,6 +2,7 @@ import json
 import re
 from typing import Any
 from typing import Callable
+from typing import Optional
 from typing import Union
 
 import httpx
@@ -9,7 +10,8 @@ import pytest_httpx
 
 from pytest_aws_apigateway.context import LambdaContext
 from pytest_aws_apigateway.context import create_context
-from pytest_aws_apigateway.integration import Integration, IntegrationResponse
+from pytest_aws_apigateway.integration import Integration
+from pytest_aws_apigateway.integration import IntegrationResponse
 from pytest_aws_apigateway.integration import ResponseFormatError
 from pytest_aws_apigateway.integration import build_integration_request
 from pytest_aws_apigateway.integration import transform_integration_response
@@ -30,6 +32,7 @@ class ApiGatewayMock:
         method: str,
         endpoint: str,
         handler: Callable[[dict[str, Any], LambdaContext], IntegrationResponse],
+        context: Optional[Union[LambdaContext, Callable[[], LambdaContext]]] = None,
     ) -> Integration:
         """
         Register an AWS Lambda function handler that will be called if a request matches.
@@ -39,15 +42,18 @@ class ApiGatewayMock:
             method: HTTP method for which the integration should be called. Can be 'ANY' as a catch-all.
             endpoint: API endpoint for the API gateway. Example: 'http://localhost'
             handler: AWS Lambda handler function that will be called when a request matches
+            context: context object that will be passed to the function handler. Can also be a callable that produces
+                the context object. If not provided, a default object will be passed in.
         """
         resource = self._normalize_resource(resource)
         endpoint = self._normalize_endpoint(endpoint)
 
         url = self._url_expression(endpoint, resource)
+        context_generator = self._build_context_generator(handler, context)
 
         def integration(request: httpx.Request) -> httpx.Response:
             event = build_integration_request(request, resource)
-            context = create_context(handler)
+            context = context_generator()
             resp = handler(event, context)
             try:
                 return transform_integration_response(resp)
@@ -77,3 +83,15 @@ class ApiGatewayMock:
 
     def _normalize_endpoint(self, endpoint: str) -> str:
         return endpoint.rstrip("/")
+
+    def _build_context_generator(
+        self,
+        handler: Callable[[dict[str, Any], LambdaContext], IntegrationResponse],
+        context: Optional[Union[LambdaContext, Callable[[], LambdaContext]]],
+    ) -> Callable[[], LambdaContext]:
+        if not context:
+            return lambda: create_context(handler)
+        if isinstance(context, LambdaContext):
+            return lambda: context
+        elif isinstance(context, Callable):
+            return context

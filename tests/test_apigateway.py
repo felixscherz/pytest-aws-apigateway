@@ -1,7 +1,9 @@
+import json
+
 import httpx
 
-import json
 from pytest_aws_apigateway import ApiGatewayMock
+from pytest_aws_apigateway import LambdaContext
 
 
 def test_root_resource(apigateway_mock: ApiGatewayMock):
@@ -108,3 +110,50 @@ def test_query_strings_are_forwarded(apigateway_mock: ApiGatewayMock):
         resp = client.get("https://some/?testing&foo=bar")
         assert "testing" in resp.json()
         assert resp.json()["foo"] == "bar"
+
+
+def test_custom_context_object_passed_to_handler(apigateway_mock: ApiGatewayMock):
+    def handler(event, context):
+        return {"statusCode": 200, "body": json.dumps({"body": context.function_name})}
+
+    context = LambdaContext(
+        aws_request_id="0773bb78-068f-43d6-b1d8-fe459da4de43",
+        log_group_name="/aws/lambda/test-handler",
+        log_stream_name="2024/05/15/[$LATEST]f54678254f1546a494246cf8ea130bc3",
+        invoked_function_arn="arn:aws:lambda:us-east-1:123456789012:function:testApiGateway",
+        function_name="test-handler",
+        function_version="$LATEST",
+        memory_limit_in_mb="128",
+    )
+
+    apigateway_mock.add_integration(
+        "/", handler=handler, method="GET", endpoint="https://some/", context=context
+    )
+
+    with httpx.Client() as client:
+        resp = client.get("https://some/")
+        assert resp.json() == {"body": "test-handler"}
+
+
+def test_custom_context_generator_passed_to_handler(apigateway_mock: ApiGatewayMock):
+    def handler(event, context):
+        return {"statusCode": 200, "body": json.dumps({"body": context.function_name})}
+
+    def context():
+        return LambdaContext(
+            aws_request_id="0773bb78-068f-43d6-b1d8-fe459da4de43",
+            log_group_name="/aws/lambda/test-handler",
+            log_stream_name="2024/05/15/[$LATEST]f54678254f1546a494246cf8ea130bc3",
+            invoked_function_arn="arn:aws:lambda:us-east-1:123456789012:function:testApiGateway",
+            function_name="test-handler",
+            function_version="$LATEST",
+            memory_limit_in_mb="128",
+        )
+
+    apigateway_mock.add_integration(
+        "/", handler=handler, method="GET", endpoint="https://some/", context=context
+    )
+
+    with httpx.Client() as client:
+        resp = client.get("https://some/")
+        assert resp.json() == {"body": "test-handler"}

@@ -1,5 +1,8 @@
 from dataclasses import dataclass
+from datetime import datetime
+from datetime import timezone
 from typing import Callable
+from uuid import uuid4
 
 
 @dataclass
@@ -17,12 +20,13 @@ class LambdaContext:
 
 def create_context(handler: Callable) -> LambdaContext:
     name = handler.__name__
+    time = datetime.now(timezone.utc)
     return LambdaContext(
-        aws_request_id="testing",
-        log_stream_name=f"{name}-log-stream",
-        log_group_name=f"{name}-log-group",
+        aws_request_id=str(uuid4()),
+        log_group_name=f"/aws/lambda/{name}",
+        log_stream_name=f"{time:%Y}/{time:%m}/{time:%d}/[$LATEST]aws/lambda/{name}",
         invoked_function_arn=f"{name}",
         memory_limit_in_mb="128",
         function_version="$LATEST",
-        function_name=f"{name}",
+        function_name=f"arn:aws:lambda:us-east-1:123456789012:function:{name}",
     )
