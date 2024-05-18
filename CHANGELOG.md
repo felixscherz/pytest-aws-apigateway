@@ -1,3 +1,10 @@
+# pytest-aws-apigateway 0.7.0 (2024-05-18)
+
+### Features
+
+- Can now pass in a custom lambda context.
+
+
 # pytest-aws-apigateway 0.6.0 (2024-05-16)
 
 No significant changes.
