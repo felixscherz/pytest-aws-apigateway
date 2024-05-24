@@ -32,7 +32,7 @@ def test_hello_world(apigateway_mock: ApiGatewayMock):
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/")
+        resp = client.get("https://greetings/")
         assert resp.json() == {"message": "Hello World!"}
 ```
 
