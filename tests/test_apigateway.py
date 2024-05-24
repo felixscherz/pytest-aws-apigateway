@@ -11,11 +11,11 @@ def test_root_resource(apigateway_mock: ApiGatewayMock):
         return {"statusCode": 200, "body": json.dumps({"body": "hello"})}
 
     apigateway_mock.add_integration(
-        "/", handler=handler, method="GET", endpoint="https://some/"
+        "/", handler=handler, method="GET", endpoint="https://foo/"
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/")
+        resp = client.get("https://foo/")
         assert resp.json() == {"body": "hello"}
 
 
@@ -24,11 +24,11 @@ def test_child_resource(apigateway_mock: ApiGatewayMock):
         return {"statusCode": 200, "body": json.dumps({"body": "hello"})}
 
     apigateway_mock.add_integration(
-        "/orders", handler=handler, method="GET", endpoint="https://some/"
+        "/orders", handler=handler, method="GET", endpoint="https://foo/"
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/orders")
+        resp = client.get("https://foo/orders")
         assert resp.json() == {"body": "hello"}
 
 
@@ -38,11 +38,11 @@ def test_child_resource_with_parameter(apigateway_mock: ApiGatewayMock):
         return {"statusCode": 200, "body": json.dumps({"params": params})}
 
     apigateway_mock.add_integration(
-        "/orders/{id}", handler=handler, method="GET", endpoint="https://some/"
+        "/orders/{id}", handler=handler, method="GET", endpoint="https://foo/"
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/orders/123")
+        resp = client.get("https://foo/orders/123")
         assert resp.json() == {"params": {"id": "123"}}
 
 
@@ -51,11 +51,11 @@ def test_invalid_output_format_returns_500(apigateway_mock: ApiGatewayMock):
         return {"statusCode": "200"}
 
     apigateway_mock.add_integration(
-        "/", handler=handler, method="GET", endpoint="https://some/"
+        "/", handler=handler, method="GET", endpoint="https://foo/"
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/")
+        resp = client.get("https://foo/")
         assert resp.status_code == 500
 
 
@@ -64,11 +64,11 @@ def test_output_dict_is_transformed_to_response(apigateway_mock: ApiGatewayMock)
         return {"statusCode": 200}
 
     apigateway_mock.add_integration(
-        "/", handler=handler, method="GET", endpoint="https://some/"
+        "/", handler=handler, method="GET", endpoint="https://foo/"
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/")
+        resp = client.get("https://foo/")
         assert resp.status_code == 200
 
 
@@ -77,11 +77,11 @@ def test_match_on_ANY_method(apigateway_mock: ApiGatewayMock):
         return {"statusCode": 200, "body": json.dumps({"body": "hello"})}
 
     apigateway_mock.add_integration(
-        "/", handler=handler, method="ANY", endpoint="https://some/"
+        "/", handler=handler, method="ANY", endpoint="https://foo/"
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/")
+        resp = client.get("https://foo/")
         assert resp.json() == {"body": "hello"}
 
 
@@ -90,11 +90,11 @@ def test_headers_are_forwarded(apigateway_mock: ApiGatewayMock):
         return {"statusCode": 200, "body": json.dumps(event["headers"])}
 
     apigateway_mock.add_integration(
-        "/", handler=handler, method="ANY", endpoint="https://some/"
+        "/", handler=handler, method="ANY", endpoint="https://foo/"
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/", headers={"x-test": "testing"})
+        resp = client.get("https://foo/", headers={"x-test": "testing"})
         assert resp.json()["x-test"] == "testing"
 
 
@@ -103,11 +103,11 @@ def test_query_strings_are_forwarded(apigateway_mock: ApiGatewayMock):
         return {"statusCode": 200, "body": json.dumps(event["queryStringParameters"])}
 
     apigateway_mock.add_integration(
-        "/", handler=handler, method="ANY", endpoint="https://some/"
+        "/", handler=handler, method="ANY", endpoint="https://foo/"
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/?testing&foo=bar")
+        resp = client.get("https://foo/?testing&foo=bar")
         assert "testing" in resp.json()
         assert resp.json()["foo"] == "bar"
 
@@ -127,11 +127,11 @@ def test_custom_context_object_passed_to_handler(apigateway_mock: ApiGatewayMock
     )
 
     apigateway_mock.add_integration(
-        "/", handler=handler, method="GET", endpoint="https://some/", context=context
+        "/", handler=handler, method="GET", endpoint="https://foo/", context=context
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/")
+        resp = client.get("https://foo/")
         assert resp.json() == {"body": "test-handler"}
 
 
@@ -151,9 +151,9 @@ def test_custom_context_generator_passed_to_handler(apigateway_mock: ApiGatewayM
         )
 
     apigateway_mock.add_integration(
-        "/", handler=handler, method="GET", endpoint="https://some/", context=context
+        "/", handler=handler, method="GET", endpoint="https://foo/", context=context
     )
 
     with httpx.Client() as client:
-        resp = client.get("https://some/")
+        resp = client.get("https://foo/")
         assert resp.json() == {"body": "test-handler"}
